@@ -25,11 +25,10 @@ protected:
     Ui::MainWindow *ui;
 private slots:
     void on_pushButton_clicked();
-    void selectionChanged();
+    void on_selectionChanged();
+
 
 };
-
-
 
 class Box{
 /*

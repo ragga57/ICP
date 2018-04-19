@@ -11,6 +11,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
     scene = new QGraphicsScene(this);
     ui->graphicsView->setScene(scene);
+
+    connect(scene, SIGNAL (selectionChanged()), this, SLOT (on_selectionChanged()));
 }
 
 MainWindow::~MainWindow()
@@ -27,11 +29,11 @@ void MainWindow::on_pushButton_clicked()
     item->setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable);
     */
     BoxPlus newBox(&scene, &ui);
-
+    ui->label->setText("Test58");
 }
 
-void MainWindow::selectionChanged(){
-    ui->label->text("Test");
+void MainWindow::on_selectionChanged(){
+    ui->label->setText("Test69");
 }
 
 BoxPlus::BoxPlus(auto *scene, auto *ui){
@@ -42,7 +44,7 @@ BoxPlus::BoxPlus(auto *scene, auto *ui){
     outputPort.first = "number";
     outputPort.second = 0.0;
 
-    (*ui)->label->setText("HOVNO");
+    //(*ui)->label->setText("HOVNO");
 
     QBrush blueBrush(Qt::blue);
     QPen Pen(Qt::black);
