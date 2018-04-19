@@ -10,62 +10,47 @@ MainWindow::MainWindow(QWidget *parent) :
 
     scene = new QGraphicsScene(this);
     ui->graphicsView->setScene(scene);
-
-    QBrush blueBrush(Qt::blue);
-    QPen Pen(Qt::black);
-    Pen.setWidth(6);
-    QPainter painter(this);
-    QRectF rect;
-    Pen.setWidth(2);
-    painter.setPen(Pen);
-    rect.bottom();
-    ui->graphicsView->setScene(scene);
-    //scene->addRect(0,20,40,30,Pen,blueBrush);
-    QGraphicsRectItem *item = scene->addRect(0,20,40,30,Pen,blueBrush);
-    item->setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable);
-
-
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
+    delete scene;
 }
 
 void MainWindow::on_pushButton_clicked()
 {   /*
-    m_clicked = true;
-    update();
-    */
     QBrush blueBrush(Qt::blue);
     QPen Pen(Qt::black);
     QGraphicsRectItem *item = scene->addRect(0,20,40,30,Pen,blueBrush);
     item->setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable);
-}
-
-void MainWindow::paintEvent(QPaintEvent *)
-{
-    /*
-    QPainter p(this);
-    QRectF rectangle(10.0, 20.0, 80.0, 60.0);
-    QRectF rectangle2(100.0, 20.0, 80.0, 60.0);
-    if(m_clicked){
-        p.setBrush(Qt::red);
-        p.drawRect(rectangle);
-    }else{
-        p.setBrush(Qt::blue);
-        p.drawRect(rectangle2);
-    }
     */
+    BoxPlus newBox(&scene, &ui);
 
 }
 
 
+BoxPlus::BoxPlus(auto *scene, auto *ui){
+    inputPort1.first = "number";
+    inputPort1.second = 0.0;
+    inputPort2.first = "number";
+    inputPort2.second = 0.0;
+    outputPort.first = "number";
+    outputPort.second = 0.0;
 
+    (*ui)->label->setText("HOVNO");
 
+    QBrush blueBrush(Qt::blue);
+    QPen Pen(Qt::black);
+    QGraphicsRectItem *item = (*scene)->addRect(0,20,40,30,Pen,blueBrush);
+    item->setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable);
+}
+BoxPlus::~BoxPlus(){
 
-void MainWindow::on_pushButton_2_clicked()
-{
-    m_clicked = false;
-    update();
+}
+void BoxPlus::calculate(QPair<QString, double> opt1, QPair<QString, double> opt2){
+    if (opt1.first == "number" && opt2.first == "number" && outputPort.first == "number"){
+        outputPort.second = opt1.second + opt2.second;
+    }
+
 }
