@@ -17,13 +17,16 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
+    getScene();
+    Ui::MainWindow *ui;
+protected:
+  //  Ui::MainWindow *ui;
+    QGraphicsScene *scene;
 
 private slots:
     void on_pushButton_clicked();
 
-protected:
-    Ui::MainWindow *ui;
-    QGraphicsScene *scene;
+
 };
 
 

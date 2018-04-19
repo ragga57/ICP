@@ -1,5 +1,6 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include "iostream"
 
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -29,6 +30,13 @@ void MainWindow::on_pushButton_clicked()
 
 }
 
+MainWindow::getScene(){
+
+}
+
+void QGraphicsScene::selectionChanged(){
+    MainWindow::ui->label->setText("HOVNO");
+}
 
 BoxPlus::BoxPlus(auto *scene, auto *ui){
     inputPort1.first = "number";
