@@ -3,6 +3,8 @@
 build-blockeditor-Desktop_Qt_5_5_1_MinGW_32bit-Debug/Makefile.Release
 *.o
 *.o
-build-blockeditor-Desktop_Qt_5_5_1_MinGW_32bit-Debug/Makefile
+build-blockeditor-Desktop_Qt_5_5_1_MinGW_32bit-Debug/
 *.Debug
 *.Release
+build-blockeditor-Desktop_Qt_5_5_1_MinGW_32bit-Debug/debug/moc_mainwindow.cpp
+build-blockeditor-Desktop_Qt_5_5_1_MinGW_32bit-Debug/Makefile
