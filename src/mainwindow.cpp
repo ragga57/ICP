@@ -34,11 +34,20 @@ void MainWindow::on_pushButton_clicked()
 
 void MainWindow::on_selectionChanged(){
     ui->label->setText("Test69");
+    auto temp_items = scene->selectedItems();
+     qDebug() << temp_items[0] << endl;
+     qDebug() << temp_items[0]->parentObject() << endl;
+     qDebug() << temp_items[0]->parentWidget() << endl;
+     qDebug() << temp_items[0]->parentItem() << endl;
+     qDebug() << temp_items[0]->data(0) << endl;
 }
 
+
+double test = 1.0;
 BoxPlus::BoxPlus(auto *scene, auto *ui){
+    test = test+1.0;
     inputPort1.first = "number";
-    inputPort1.second = 0.0;
+    inputPort1.second = test;
     inputPort2.first = "number";
     inputPort2.second = 0.0;
     outputPort.first = "number";
@@ -50,6 +59,9 @@ BoxPlus::BoxPlus(auto *scene, auto *ui){
     QPen Pen(Qt::black);
     QGraphicsRectItem *item = (*scene)->addRect(0,20,40,30,Pen,blueBrush);
     item->setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable);
+    item->setData(0,inputPort1.second);
+   // item->setData(1,toString(this));
+   // item->setParentItem(&this);
 }
 BoxPlus::~BoxPlus(){
 
