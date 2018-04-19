@@ -19,18 +19,16 @@ MainWindow::~MainWindow()
 }
 
 void MainWindow::on_pushButton_clicked()
-{   /*
-    QBrush blueBrush(Qt::blue);
-    QPen Pen(Qt::black);
-    QGraphicsRectItem *item = scene->addRect(0,20,40,30,Pen,blueBrush);
-    item->setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable);
-    */
-    BoxPlus newBox(&scene, &ui);
+{
+    qDebug() << "neco" << endl;
+    BoxPlus *newBox = new BoxPlus();
+    qDebug() << "vnitrek " << newBox->getData("inputPort1").first <<" "<< newBox->getData("inputPort1").second << endl;
+
 
 }
 
 
-BoxPlus::BoxPlus(auto *scene, auto *ui){
+BoxPlus::BoxPlus(){
     inputPort1.first = "number";
     inputPort1.second = 0.0;
     inputPort2.first = "number";
@@ -38,15 +36,28 @@ BoxPlus::BoxPlus(auto *scene, auto *ui){
     outputPort.first = "number";
     outputPort.second = 0.0;
 
-    (*ui)->label->setText("HOVNO");
+    qDebug() << "tady " << ui->label->text() << endl;
+    ui->label->setText("HOVNO");
+    ui->label->update();
+    ui->label->setText("PROC");
 
-    QBrush blueBrush(Qt::blue);
+    //QLabel *label = new QLabel(this);
+    //label->setText("newBoxLabel");
+    QBrush blueBrush(Qt::yellow);
     QPen Pen(Qt::black);
-    QGraphicsRectItem *item = (*scene)->addRect(0,20,40,30,Pen,blueBrush);
+    QGraphicsRectItem *item = scene->addRect(0,20,150,150,Pen,blueBrush);
     item->setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable);
 }
 BoxPlus::~BoxPlus(){
+   // delete label;
 
+}
+QPair<QString, double> BoxPlus::getData(QString opt){
+    if (opt == "inputPort1"){
+        return inputPort1;
+    }else{
+        return inputPort2;
+    }
 }
 void BoxPlus::calculate(QPair<QString, double> opt1, QPair<QString, double> opt2){
     if (opt1.first == "number" && opt2.first == "number" && outputPort.first == "number"){
