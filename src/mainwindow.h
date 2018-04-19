@@ -4,7 +4,7 @@
 #include <QMainWindow>
 #include <QGraphicsScene>
 #include <QGraphicsRectItem>
-#include "boxes.h"
+//#include "boxes.h"
 
 namespace Ui {
 class MainWindow;
