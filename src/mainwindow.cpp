@@ -30,12 +30,8 @@ void MainWindow::on_pushButton_clicked()
 
 }
 
-MainWindow::getScene(){
-
-}
-
-void QGraphicsScene::selectionChanged(){
-    ui->label->setText("HOVNO");
+void MainWindow::selectionChanged(){
+    ui->label->text("Test");
 }
 
 BoxPlus::BoxPlus(auto *scene, auto *ui){

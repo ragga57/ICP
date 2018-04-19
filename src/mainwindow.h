@@ -12,22 +12,23 @@ class MainWindow;
 
 class MainWindow : public QMainWindow
 {
-    Q_OBJECT
+   Q_OBJECT
 
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
     getScene();
-    Ui::MainWindow *ui;
+
 protected:
   //  Ui::MainWindow *ui;
     QGraphicsScene *scene;
-
+    Ui::MainWindow *ui;
 private slots:
     void on_pushButton_clicked();
-
+    void selectionChanged();
 
 };
+
 
 
 class Box{
