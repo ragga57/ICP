@@ -35,7 +35,7 @@ MainWindow::getScene(){
 }
 
 void QGraphicsScene::selectionChanged(){
-    MainWindow::ui->label->setText("HOVNO");
+    ui->label->setText("HOVNO");
 }
 
 BoxPlus::BoxPlus(auto *scene, auto *ui){
