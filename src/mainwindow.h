@@ -4,7 +4,7 @@
 #include <QMainWindow>
 #include <QGraphicsScene>
 #include <QGraphicsRectItem>
-#include "boxes.h"
+
 
 namespace Ui {
 class MainWindow;
@@ -27,8 +27,7 @@ protected:
 };
 
 
-class Box : public MainWindow
-{
+class Box{
 /*
 protected:
     QPair<QString, double> inputPort1;
