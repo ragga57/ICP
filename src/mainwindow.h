@@ -5,7 +5,8 @@
 #include <QGraphicsScene>
 #include <QGraphicsRectItem>
 #include <QDebug>
-
+#include <QBoxLayout>
+#include <QLabel>
 
 
 namespace Ui {
@@ -22,28 +23,32 @@ public:
 
 private slots:
     void on_pushButton_clicked();
+
 protected:
     Ui::MainWindow *ui;
     QGraphicsScene *scene;
 };
 
 
-
-
-class Box : public MainWindow {
+class Box
+{
+/*
+protected:
+    QPair<QString, double> inputPort1;
+    QPair<QString, double> inputPort2;
+public:
+*/
 
 };
-class BoxPlus : public Box {
+class BoxPlus : public Box{
 protected:
     QPair<QString, double> inputPort1;
     QPair<QString, double> inputPort2;
     QPair<QString, double> outputPort;
 public:
-    BoxPlus();
+    BoxPlus(auto *scene,auto *ui);
     ~BoxPlus();
-    QPair<QString, double> getData(QString opt);
     void calculate(QPair<QString, double> opt1, QPair<QString, double> opt2);
-
+    QPair<QString, double> getData(QString opt);
 };
-
 #endif // MAINWINDOW_H

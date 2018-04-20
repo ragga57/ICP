@@ -7,9 +7,9 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-
     scene = new QGraphicsScene(this);
     ui->graphicsView->setScene(scene);
+
 }
 
 MainWindow::~MainWindow()
@@ -20,15 +20,17 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_pushButton_clicked()
 {
-    qDebug() << "neco" << endl;
-    BoxPlus *newBox = new BoxPlus();
-    qDebug() << "vnitrek " << newBox->getData("inputPort1").first <<" "<< newBox->getData("inputPort1").second << endl;
+   // qDebug() << "neco" << endl;
+    BoxPlus *newBox = new BoxPlus(&scene,&ui);
+
+   // qDebug() << "vnitrek " << newBox->getData("inputPort1").first <<","<< newBox->getData("inputPort1").second << endl;
 
 
 }
 
 
-BoxPlus::BoxPlus(){
+BoxPlus::BoxPlus(auto *scene,auto *ui){
+
     inputPort1.first = "number";
     inputPort1.second = 0.0;
     inputPort2.first = "number";
@@ -36,17 +38,24 @@ BoxPlus::BoxPlus(){
     outputPort.first = "number";
     outputPort.second = 0.0;
 
-    qDebug() << "tady " << ui->label->text() << endl;
-    ui->label->setText("HOVNO");
-    ui->label->update();
-    ui->label->setText("PROC");
+    //funguje
+    //qDebug() << "tady " << (*ui)->label->text() << endl;
+    //nefunguje
+    //(*ui)->label->setText("HOVNO");
+    //qDebug() << "tady " << (*ui)->label->text() << endl;
 
-    //QLabel *label = new QLabel(this);
-    //label->setText("newBoxLabel");
+
+
     QBrush blueBrush(Qt::yellow);
     QPen Pen(Qt::black);
-    QGraphicsRectItem *item = scene->addRect(0,20,150,150,Pen,blueBrush);
+    QGraphicsRectItem *item = (*scene)->addRect(0,20,150,150,Pen,blueBrush);
     item->setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable);
+
+
+    //QLabel *label = new QLabel(QWidget * parent = 0, Qt::WindowFlags f = 0);
+    //label->setText("newBoxLabel");
+
+    //qDebug() << "titulek " << label->text() << endl;
 }
 BoxPlus::~BoxPlus(){
    // delete label;
