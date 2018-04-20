@@ -5,6 +5,8 @@
 #include <QGraphicsScene>
 #include <QGraphicsRectItem>
 #include <qdebug.h>
+#include <QComboBox>
+#include <QGraphicsProxyWidget>
 
 
 namespace Ui {
@@ -18,7 +20,6 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
-    getScene();
 
 protected:
   //  Ui::MainWindow *ui;

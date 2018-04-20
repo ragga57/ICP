@@ -1,7 +1,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "iostream"
-
+#include "string"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -34,7 +34,10 @@ void MainWindow::on_pushButton_clicked()
 
 void MainWindow::on_selectionChanged(){
     ui->label->setText("Test69");
+    // pri kliknuti do sceny crash...
     auto temp_items = scene->selectedItems();
+    QVariant data0 = temp_items[0]->data(0);
+    ui->label->setText(data0.toString());
      qDebug() << temp_items[0] << endl;
      qDebug() << temp_items[0]->parentObject() << endl;
      qDebug() << temp_items[0]->parentWidget() << endl;
@@ -57,9 +60,21 @@ BoxPlus::BoxPlus(auto *scene, auto *ui){
 
     QBrush blueBrush(Qt::blue);
     QPen Pen(Qt::black);
-    QGraphicsRectItem *item = (*scene)->addRect(0,20,40,30,Pen,blueBrush);
+    QGraphicsRectItem *item = (*scene)->addRect(0,20,100,300,Pen,blueBrush);
     item->setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable);
     item->setData(0,inputPort1.second);
+    auto custom_combo_box = new QComboBox();
+    auto c2ustom_combo_box = new QComboBox();
+
+    QGraphicsProxyWidget* pMyProxy = new QGraphicsProxyWidget(item);
+    QGraphicsProxyWidget* pMyProxy2 = new QGraphicsProxyWidget(item);
+
+    pMyProxy->setWidget(custom_combo_box);
+    pMyProxy2->setWidget(c2ustom_combo_box);
+    pMyProxy->setPos(10,50);
+    pMyProxy2->setPos(10, 100);
+
+
    // item->setData(1,toString(this));
    // item->setParentItem(&this);
 }
