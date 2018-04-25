@@ -2,6 +2,9 @@
 #include "ui_mainwindow.h"
 #include "iostream"
 #include "string"
+#include <QDebug>
+#include <QList>
+
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -13,7 +16,10 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->graphicsView->setScene(scene);
 
     connect(scene, SIGNAL (selectionChanged()), this, SLOT (on_selectionChanged()));
+   // qDebug() <<"Main Windows Consturctor" << endl;
+    qWarning() << "FUCK YOU QT" << endl;
 }
+
 
 MainWindow::~MainWindow()
 {
@@ -28,26 +34,38 @@ void MainWindow::on_pushButton_clicked()
     QGraphicsRectItem *item = scene->addRect(0,20,40,30,Pen,blueBrush);
     item->setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable);
     */
-    BoxPlus newBox(&scene, &ui);
+    qWarning() << &boxesList <<endl;
+    //int test = boxesList;
+     BoxPlus *temp = new BoxPlus(&scene, &ui, boxesList);
+    boxesList.append(temp);
+     //qWarning() << boxesList <<endl;
+    qWarning() << "PUSH button" << boxesList <<endl;
     ui->label->setText("Test58");
+    qWarning() <<"pushButton" << endl;
+    qWarning() << "FUCK YOU QT" << endl;
+
 }
 
 void MainWindow::on_selectionChanged(){
+   // qWarning() << boxesList <<endl;
+
     ui->label->setText("Test69");
     // pri kliknuti do sceny crash...
-    auto temp_items = scene->selectedItems();
-    QVariant data0 = temp_items[0]->data(0);
-    ui->label->setText(data0.toString());
-     qDebug() << temp_items[0] << endl;
-     qDebug() << temp_items[0]->parentObject() << endl;
-     qDebug() << temp_items[0]->parentWidget() << endl;
-     qDebug() << temp_items[0]->parentItem() << endl;
-     qDebug() << temp_items[0]->data(0) << endl;
+   auto temp_items = scene->selectedItems();
+   if (!temp_items.empty()){
+        QVariant data0 = temp_items[0]->data(0);
+        ui->label->setText(data0.toString());
+   }
+    // qDebug() << temp_items[0] << endl;
+     //qDebug() << temp_items[0]->parentObject() << endl;
+     //qDebug() << temp_items[0]->parentWidget() << endl;
+     //qDebug() << temp_items[0]->parentItem() << endl;
+     //qDebug() << temp_items[0]->data(0) << endl;
 }
 
 
 double test = 1.0;
-BoxPlus::BoxPlus(auto *scene, auto *ui){
+BoxPlus::BoxPlus(auto *scene, auto *ui, QList<BoxPlus*> &boxesList){
     test = test+1.0;
     inputPort1.first = "number";
     inputPort1.second = test;
@@ -56,28 +74,69 @@ BoxPlus::BoxPlus(auto *scene, auto *ui){
     outputPort.first = "number";
     outputPort.second = 0.0;
 
+    qWarning() << &boxesList << endl;
+
+    boxesListTemp = &boxesList;
+
+    qWarning() << "BoxPLUS Const" << boxesListTemp << endl;
     //(*ui)->label->setText("HOVNO");
 
     QBrush blueBrush(Qt::blue);
     QPen Pen(Qt::black);
-    QGraphicsRectItem *item = (*scene)->addRect(0,20,100,300,Pen,blueBrush);
-    item->setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable);
-    item->setData(0,inputPort1.second);
-    auto custom_combo_box = new QComboBox();
-    auto c2ustom_combo_box = new QComboBox();
+    MainItem = (*scene)->addRect(0,20,200,125,Pen,blueBrush);
+    MainItem->setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable);
+    MainItem->setData(0,inputPort1.second);
+    auto ComboBoxInput1 = new QComboBox();
+    auto ComboBoxInput2 = new QComboBox();
+    auto ComboBoxOutput = new QComboBox();
+    auto LabelName = new QLabel("+");
+    auto deleteButton = new QPushButton();
 
-    QGraphicsProxyWidget* pMyProxy = new QGraphicsProxyWidget(item);
-    QGraphicsProxyWidget* pMyProxy2 = new QGraphicsProxyWidget(item);
+    ComboBoxInput1->setFixedHeight(25);
+    ComboBoxInput1->setFixedWidth(75);
+    ComboBoxInput2->setFixedHeight(25);
+    ComboBoxInput2->setFixedWidth(75);
+    ComboBoxOutput->setFixedHeight(25);
+    ComboBoxOutput->setFixedWidth(75);
 
-    pMyProxy->setWidget(custom_combo_box);
-    pMyProxy2->setWidget(c2ustom_combo_box);
-    pMyProxy->setPos(10,50);
-    pMyProxy2->setPos(10, 100);
+    LabelName->setFixedHeight(25);
+    LabelName->setFixedWidth(25);
+
+    QFont font = LabelName->font();
+    font.setPointSize(20);
+    font.setBold(true);
+    LabelName->setFont(font);
+    LabelName->setAlignment(Qt::AlignCenter);
+    LabelName->setAutoFillBackground(false);
+    LabelName->setStyleSheet("background:transparent");
 
 
+    QGraphicsProxyWidget* ComboProxyInput1 = new QGraphicsProxyWidget(MainItem);
+    QGraphicsProxyWidget* ComboProxyInput2 = new QGraphicsProxyWidget(MainItem);
+    QGraphicsProxyWidget* ComboProxyOutput = new QGraphicsProxyWidget(MainItem);
+    QGraphicsProxyWidget* LabelProxyName = new QGraphicsProxyWidget(MainItem);
+    QGraphicsProxyWidget* DeleteProxyButton = new QGraphicsProxyWidget(MainItem);
+
+    ComboProxyInput1->setWidget(ComboBoxInput1);
+    ComboProxyInput2->setWidget(ComboBoxInput2);
+    ComboProxyOutput->setWidget(ComboBoxOutput);
+    LabelProxyName->setWidget(LabelName);
+    DeleteProxyButton->setWidget(deleteButton);
+
+    ComboProxyInput1->setPos(10, 45);
+    ComboProxyInput2->setPos(10, 105);
+    ComboProxyOutput->setPos(115,76 );
+    LabelProxyName->setPos(150,35);
+    DeleteProxyButton->setPos(150,200);
+
+    qWarning() << "PRE SIGNAL" << endl;
+
+    connect(deleteButton, SIGNAL (clicked()), this, SLOT (on_deleteButton_clicked()));
+    qWarning() << "POST SIGNAL" << endl;
    // item->setData(1,toString(this));
    // item->setParentItem(&this);
 }
+
 BoxPlus::~BoxPlus(){
 
 }
@@ -86,4 +145,36 @@ void BoxPlus::calculate(QPair<QString, double> opt1, QPair<QString, double> opt2
         outputPort.second = opt1.second + opt2.second;
     }
 
+}
+
+QList<BoxPlus*> MainWindow::getList(){
+    return boxesList;
+
+}
+
+void BoxPlus::on_deleteButton_clicked(){
+    QObject *temp = sender();
+    qWarning() << temp << endl;
+    qWarning() << "this : " << this << endl;
+
+    qWarning() << "Pred" <<endl;
+    qWarning() << "index" << &(*boxesListTemp->at(0)) << endl;
+    qWarning() << "index of" << ((*boxesListTemp).indexOf(this)) << endl;
+
+    qWarning() << *boxesListTemp <<endl;
+
+    //QList<BoxPlus *> templist = w.getList();
+    delete MainItem;
+    int temp2 = ((*boxesListTemp).indexOf(this));
+    (*boxesListTemp).removeAt(temp2);
+
+    qWarning() << "Po" <<endl;
+    qWarning() << *boxesListTemp <<endl;
+
+    qWarning() << "DELETE" << endl;
+}
+
+void MainWindow::on_deleteButton_clicked(BoxPlus *toDelete){
+   // delete MainItem;
+    qWarning() << "DELETE" << endl;
 }
