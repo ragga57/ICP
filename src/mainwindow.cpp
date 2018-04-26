@@ -14,7 +14,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     scene = new QGraphicsScene(this);
     ui->graphicsView->setScene(scene);
-
+    id = 0;
     connect(scene, SIGNAL (selectionChanged()), this, SLOT (on_selectionChanged()));
    // qDebug() <<"Main Windows Consturctor" << endl;
     qWarning() << "FUCK YOU QT" << endl;
@@ -26,7 +26,34 @@ MainWindow::~MainWindow()
     delete ui;
     delete scene;
 }
+void MainWindow::updatePorts(){
+    QString curr1;
+    QString curr2;
+    QString curr3;
+    for(auto &i: boxesList){
+        //qDebug() << i->id << endl;
+        curr1 = i->ComboBoxInput1->currentText();
+        curr2 = i->ComboBoxInput2->currentText();
+        curr3 = i->ComboBoxOutput->currentText();
+        i->ComboBoxInput1->clear();
+        i->ComboBoxInput2->clear();
+        i->ComboBoxOutput->clear();
+       // i->ComboBoxInput1->addItem(curr1);
+       // i->ComboBoxInput1->setCurrentText(curr1);
+       // qDebug() << i->ComboBoxInput1->currentIndex() << endl;
+        i->ComboBoxInput1->addItems(availablePorts);
+        int temp_index = i->ComboBoxInput1->findText(curr1);
+        if(temp_index >= 0){
+            i->ComboBoxInput1->setCurrentIndex(temp_index);
+        }
+        else{
+            i->ComboBoxInput1->setCurrentIndex(0);
+        }
+    }
 
+
+
+}
 void MainWindow::on_pushButton_clicked()
 {   /*
     QBrush blueBrush(Qt::blue);
@@ -37,12 +64,22 @@ void MainWindow::on_pushButton_clicked()
     qWarning() << &boxesList <<endl;
     //int test = boxesList;
      BoxPlus *temp = new BoxPlus(&scene, &ui, boxesList);
+     temp->id = id;
+     temp->type = "+";
     boxesList.append(temp);
      //qWarning() << boxesList <<endl;
     qWarning() << "PUSH button" << boxesList <<endl;
     ui->label->setText("Test58");
+    availablePorts.append(QString::number(id)+QString("-inputPort1"));
+    availablePorts.append(QString::number(id)+QString("-inputPort2"));
+    availablePorts.append(QString::number(id)+QString("-OutputPort"));
     qWarning() <<"pushButton" << endl;
     qWarning() << "FUCK YOU QT" << endl;
+    for(auto &i: availablePorts)
+        qDebug() << i << endl;
+
+    id++;
+    updatePorts();
 
 }
 
@@ -86,9 +123,9 @@ BoxPlus::BoxPlus(auto *scene, auto *ui, QList<BoxPlus*> &boxesList){
     MainItem = (*scene)->addRect(0,20,200,125,Pen,blueBrush);
     MainItem->setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable);
     MainItem->setData(0,inputPort1.second);
-    auto ComboBoxInput1 = new QComboBox();
-    auto ComboBoxInput2 = new QComboBox();
-    auto ComboBoxOutput = new QComboBox();
+    ComboBoxInput1 = new QComboBox();
+    ComboBoxInput2 = new QComboBox();
+    ComboBoxOutput = new QComboBox();
     auto LabelName = new QLabel("+");
     auto deleteButton = new QPushButton();
 
