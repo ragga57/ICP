@@ -24,7 +24,7 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>20</y>
+      <y>60</y>
       <width>89</width>
       <height>29</height>
      </rect>
@@ -46,14 +46,27 @@
    <widget class="QLabel" name="label">
     <property name="geometry">
      <rect>
-      <x>30</x>
-      <y>100</y>
+      <x>20</x>
+      <y>220</y>
       <width>69</width>
       <height>21</height>
      </rect>
     </property>
     <property name="text">
      <string>TEST</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="CreateOutputBox">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>100</y>
+      <width>89</width>
+      <height>29</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>OutputBox</string>
     </property>
    </widget>
   </widget>
@@ -63,7 +76,7 @@
      <x>0</x>
      <y>0</y>
      <width>1189</width>
-     <height>21</height>
+     <height>26</height>
     </rect>
    </property>
   </widget>
