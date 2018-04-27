@@ -11,21 +11,18 @@
 #include <QPushButton>
 #include <QtGlobal>
 #include <QList>
+#include <QRegExp>
+#include <QDoubleSpinBox>
 
 
 
-class Box: public QObject{
-/*
-protected:
-    QPair<QString, double> inputPort1;
-    QPair<QString, double> inputPort2;
-public:
-*/
+class AbstractBox: public QObject{
 public:
     int id;
+    QLabel* labelName;
 
 };
-class BoxPlus : public Box{
+class OperationBox : public AbstractBox{
     Q_OBJECT
 
 protected:
@@ -33,20 +30,35 @@ protected:
     QPair<QString, double> inputPort1;
     QPair<QString, double> inputPort2;
     QPair<QString, double> outputPort;
-    QGraphicsRectItem *MainItem;
-    QList<BoxPlus *> * boxesListTemp;
+    QGraphicsRectItem *mainItem;
+    QList<OperationBox *> *boxesListTemp;
 
 public:
     QString type;
-    QComboBox* ComboBoxInput1;
-    QComboBox* ComboBoxInput2;
-    QComboBox* ComboBoxOutput;
-    BoxPlus(auto *scene, auto *ui, QList<BoxPlus *> &boxesList);
-    ~BoxPlus();
-    void calculate(QPair<QString, double> opt1, QPair<QString, double> opt2);
+    QLabel* labelType;
+    QComboBox* comboBoxInput1;
+    QComboBox* comboBoxInput2;
+    QComboBox* comboBoxOutput;
+    OperationBox(auto *scene, auto *ui, QList<OperationBox *> &boxesList);
+    ~OperationBox();
+    bool calculate();
 
 public slots:
     void on_deleteButton_clicked();
+};
+
+class InputBox: public AbstractBox{
+public:
+    QComboBox* comboBoxOutput;
+    QDoubleSpinBox* inputSpinBox;
+};
+
+class OutputBox: public AbstractBox{
+    QComboBox* comboBoxInput1;
+    QLabel* resultLabel;
+    QLineEdit* result;
+
+
 };
 
 
@@ -64,22 +76,26 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
-    QList<BoxPlus*> getList();
+    QList<OperationBox *> getList();
 
 
 protected:
   //  Ui::MainWindow *ui;
     QGraphicsScene *scene;
     Ui::MainWindow *ui;
-    QList<BoxPlus *> boxesList;
+    QList<OperationBox *> operationBoxesList;
     int id;
+    QString defaultPort = "-------";
     QList<QString> availablePorts;
+    QList<QString> usedPorts;
+private:
+    void updateSinglePort(auto &i, QString port);
 private slots:
-    void on_pushButton_clicked();
     void on_selectionChanged();
-    void on_deleteButton_clicked(BoxPlus *toDelete);
+    void on_deleteButton_clicked(OperationBox *toDelete);
     void updatePorts();
 
 
+    void on_plusBoxButton_clicked();
 };
 #endif // MAINWINDOW_H
