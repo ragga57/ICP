@@ -29,14 +29,61 @@ MainWindow::~MainWindow()
 }
 void MainWindow::updatePorts(){
 
-    //projde list a naplni hodnotama
+    //projde listy a naplni hodnotama
+    for(auto &i: inputBoxesList){
+        updateInputBoxPort(i);
+    }
     for(auto &i: operationBoxesList){
-        updateSinglePort(i,"in1");
-        updateSinglePort(i,"in2");
-        updateSinglePort(i,"out");
+        updateOperationBoxPort(i,"in1");
+        updateOperationBoxPort(i,"in2");
+        updateOperationBoxPort(i,"out");
+    }
+    for(auto &i: outputBoxesList){
+        updateOutputBoxPort(i);
     }
 }
-void MainWindow::updateSinglePort(auto &i,QString port){
+void MainWindow::updateInputBoxPort(auto &i){
+    QString currVal;
+    QString currBoxId = QString::number(i->id);
+    QList<QString> tmpList;
+    int temp_index = 0;
+
+        //ulozi selected, vymaze puvodni stav, vytvori potrebny regex
+
+            currVal = i->comboBoxOutput->currentText();
+            i->comboBoxOutput->clear();
+        QRegExp regEx(".{1,4}-out");
+        //do input portu muzou prijit jen output porty a naopak takze osetreni
+        for(auto &list: availablePorts){
+            if (!regEx.exactMatch(list)){
+                tmpList.append(list);
+            }
+        }
+        //naplni novyma hodnotama, smaze self porty a da zpatky selected
+
+             i->comboBoxOutput->addItems(tmpList);
+             //smaze z listu self porty
+             //i->comboBoxOutput->removeItem(i->comboBoxOutput->findText(currBoxId+QString("-out")));
+             //i->comboBoxOutput->removeItem(i->comboBoxOutput->findText(currBoxId+QString("-in1")));
+             //i->comboBoxOutput->removeItem(i->comboBoxOutput->findText(currBoxId+QString("-in2")));
+             //da zpatky ten selected
+             temp_index = i->comboBoxOutput->findText(currVal);
+             //osetreni 2x stejne hodnoty pri vkladani selected
+             if(temp_index >= 0){
+                 i->comboBoxOutput->setCurrentIndex(temp_index);
+             }
+             else{
+                 i->comboBoxOutput->setCurrentIndex(0);
+             }
+
+
+        tmpList.clear();
+
+
+
+}
+
+void MainWindow::updateOperationBoxPort(auto &i,QString port){
     QString currVal;
     QString specRegExp;
     QString currBoxId = QString::number(i->id);
@@ -110,7 +157,42 @@ void MainWindow::updateSinglePort(auto &i,QString port){
 
         tmpList.clear();
 
+}
 
+void MainWindow::updateOutputBoxPort(auto &i){
+    QString currVal;
+    QString currBoxId = QString::number(i->id);
+    QList<QString> tmpList;
+    int temp_index = 0;
+
+        //ulozi selected, vymaze puvodni stav, vytvori potrebny regex
+
+            currVal = i->comboBoxInput1->currentText();
+            i->comboBoxInput1->clear();
+        QRegExp regEx(".{1,4}-in.{1}");
+        //do input portu muzou prijit jen output porty a naopak takze osetreni
+        for(auto &list: availablePorts){
+            if (!regEx.exactMatch(list)){
+                tmpList.append(list);
+            }
+        }
+        //naplni novyma hodnotama, smaze self porty a da zpatky selected
+
+            i->comboBoxInput1->addItems(tmpList);
+            //smaze z listu self porty
+            i->comboBoxInput1->removeItem(i->comboBoxInput1->findText(currBoxId+QString("-out")));
+            //da zpatky ten selected
+            temp_index = i->comboBoxInput1->findText(currVal);
+            //osetreni 2x stejne hodnoty pri vkladani selected
+            if(temp_index >= 0){
+                i->comboBoxInput1->setCurrentIndex(temp_index);
+            }
+            else{
+                i->comboBoxInput1->setCurrentIndex(0);
+            }
+
+
+        tmpList.clear();
 
 }
 
@@ -131,7 +213,90 @@ void MainWindow::on_selectionChanged(){
      //qDebug() << temp_items[0]->data(0) << endl;
 }
 
-OperationBox::OperationBox(auto *scene, auto *ui, QList<OperationBox*> &boxesList){
+void MainWindow::on_deleteButton_clicked(OperationBox *toDelete){
+   // delete MainItem;
+    qWarning() << "DELETE" << endl;
+}
+
+void MainWindow::on_plusBoxButton_clicked()
+{
+    qWarning() << &operationBoxesList <<endl;
+    //int test = boxesList;
+    OperationBox *temp = new OperationBox(&scene, operationBoxesList);
+    temp->id = id;
+    temp->type = "+";
+    temp->labelType->setText("+");
+    temp->labelName->setText(QString("obj ")+QString::number(id));
+
+            //toto by asi slo do konstruktoru
+            temp->comboBoxInput1->setCurrentText(defaultPort);
+            temp->comboBoxInput2->setCurrentText(defaultPort);
+            temp->comboBoxOutput->setCurrentText(defaultPort);
+
+    operationBoxesList.append(temp);
+    //qWarning() << boxesList <<endl;
+    qWarning() << "PUSH button" << operationBoxesList <<endl;
+    ui->label->setText("Test58");
+    availablePorts.append(QString::number(id)+QString("-in1"));
+    availablePorts.append(QString::number(id)+QString("-in2"));
+    availablePorts.append(QString::number(id)+QString("-out"));
+    qWarning() <<"pushButton" << endl;
+    qWarning() << "FUCK YOU QT" << endl;
+    for(auto &i: availablePorts)
+        qDebug() << i << endl;
+
+    id++;
+    updatePorts();
+}
+
+void MainWindow::on_inputButton_clicked()
+{
+    qWarning() << &inputBoxesList <<endl;
+    //int test = boxesList;
+    InputBox *temp = new InputBox(&scene, inputBoxesList);
+    temp->id = id;
+    temp->labelName->setText(QString("obj ")+QString::number(id));
+
+            //toto by asi slo do konstruktoru
+            temp->comboBoxOutput->setCurrentText(defaultPort);
+
+    inputBoxesList.append(temp);
+    //qWarning() << boxesList <<endl;
+    qWarning() << "PUSH button" << inputBoxesList <<endl;
+    ui->label->setText("Test58");
+    availablePorts.append(QString::number(id)+QString("-out"));
+    for(auto &i: availablePorts)
+        qDebug() << i << endl;
+
+    id++;
+    updatePorts();
+}
+
+void MainWindow::on_outputButton_clicked()
+{
+    qWarning() << &outputBoxesList <<endl;
+    //int test = boxesList;
+    OutputBox *temp = new OutputBox(&scene, outputBoxesList);
+    temp->id = id;
+    temp->labelName->setText(QString("obj ")+QString::number(id));
+
+            //toto by asi slo do konstruktoru
+            temp->comboBoxInput1->setCurrentText(defaultPort);
+
+    outputBoxesList.append(temp);
+    //qWarning() << boxesList <<endl;
+    qWarning() << "PUSH button" << outputBoxesList <<endl;
+    ui->label->setText("Test58");
+    availablePorts.append(QString::number(id)+QString("-in1"));
+    for(auto &i: availablePorts)
+        qDebug() << i << endl;
+
+    id++;
+    updatePorts();
+
+}
+
+OperationBox::OperationBox(auto *scene,QList<OperationBox*> &boxesList){
     inputPort1.first = "number";
     inputPort1.second = 0.0;
     inputPort2.first = "number";
@@ -157,7 +322,7 @@ OperationBox::OperationBox(auto *scene, auto *ui, QList<OperationBox*> &boxesLis
     labelType = new QLabel();
     labelName = new QLabel();
 
-    auto deleteButton = new QPushButton();
+    deleteButton = new QPushButton();
 
     comboBoxInput1->setFixedHeight(25);
     comboBoxInput1->setFixedWidth(75);
@@ -216,12 +381,8 @@ OperationBox::OperationBox(auto *scene, auto *ui, QList<OperationBox*> &boxesLis
 OperationBox::~OperationBox(){
 
 }
+
 bool OperationBox::calculate(){
-
-}
-
-QList<OperationBox*> MainWindow::getList(){
-    return operationBoxesList;
 
 }
 
@@ -247,38 +408,191 @@ void OperationBox::on_deleteButton_clicked(){
     qWarning() << "DELETE" << endl;
 }
 
-void MainWindow::on_deleteButton_clicked(OperationBox *toDelete){
-   // delete MainItem;
+InputBox::InputBox(auto *scene,QList<InputBox*> &boxesList){
+
+    outputPort.first = "nonValid";
+    outputPort.second = 0.0;
+
+    qWarning() << &boxesList << endl;
+
+    boxesListTemp = &boxesList;
+
+    qWarning() << "InputBox Const" << boxesListTemp << endl;
+    //(*ui)->label->setText("HOVNO");
+
+    QBrush blueBrush(Qt::yellow);
+    QPen Pen(Qt::black);
+    mainItem = (*scene)->addRect(0,20,200,125,Pen,blueBrush);
+    mainItem->setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable);
+    //mainItem->setData(0,inputPort1.second);
+
+    comboBoxOutput = new QComboBox();
+    labelName = new QLabel();
+    inputSpinBox = new QDoubleSpinBox();
+
+    deleteButton = new QPushButton();
+
+    comboBoxOutput->setFixedHeight(25);
+    comboBoxOutput->setFixedWidth(75);
+    labelName->setFixedHeight(25);
+    labelName->setFixedWidth(60);
+    inputSpinBox->setFixedHeight(25);
+    inputSpinBox->setFixedWidth(75);
+
+    QFont font = labelName->font();
+    font.setPointSize(20);
+    font.setBold(true);
+
+    labelName->setFont(font);
+    labelName->setAutoFillBackground(false);
+    labelName->setStyleSheet("background:transparent");
+
+    QGraphicsProxyWidget* comboProxyOutput = new QGraphicsProxyWidget(mainItem);
+    QGraphicsProxyWidget* labelNameProxyName = new QGraphicsProxyWidget(mainItem);
+    QGraphicsProxyWidget* inputSpinBoxProxy = new QGraphicsProxyWidget(mainItem);
+    QGraphicsProxyWidget* deleteProxyButton = new QGraphicsProxyWidget(mainItem);
+
+    comboProxyOutput->setWidget(comboBoxOutput);
+    labelNameProxyName->setWidget(labelName);
+    inputSpinBoxProxy->setWidget(inputSpinBox);
+    deleteProxyButton->setWidget(deleteButton);
+
+    comboProxyOutput->setPos(115,76 );
+    labelNameProxyName->setPos(0,-5);
+    inputSpinBoxProxy->setPos(50,30);
+    deleteProxyButton->setPos(150,200);
+
+    qWarning() << "PRE SIGNAL" << endl;
+
+    connect(deleteButton, SIGNAL (clicked()), this, SLOT (on_deleteButton_clicked()));
+    qWarning() << "POST SIGNAL" << endl;
+   // item->setData(1,toString(this));
+   // item->setParentItem(&this);
+}
+
+InputBox::~InputBox(){
+
+}
+
+void InputBox::on_deleteButton_clicked(){
+    QObject *temp = sender();
+    qWarning() << temp << endl;
+    qWarning() << "this : " << this << endl;
+
+    qWarning() << "Pred" <<endl;
+    qWarning() << "index" << &(*boxesListTemp->at(0)) << endl;
+    qWarning() << "index of" << ((*boxesListTemp).indexOf(this)) << endl;
+
+    qWarning() << *boxesListTemp <<endl;
+
+    //QList<BoxPlus *> templist = w.getList();
+    delete mainItem;
+    int temp2 = ((*boxesListTemp).indexOf(this));
+    (*boxesListTemp).removeAt(temp2);
+
+    qWarning() << "Po" <<endl;
+    qWarning() << *boxesListTemp <<endl;
+
     qWarning() << "DELETE" << endl;
 }
 
-void MainWindow::on_plusBoxButton_clicked()
-{
-    qWarning() << &operationBoxesList <<endl;
-    //int test = boxesList;
-    OperationBox *temp = new OperationBox(&scene, &ui, operationBoxesList);
-    temp->id = id;
-    temp->type = "+";
-    temp->labelType->setText("+");
-    temp->labelName->setText(QString("obj ")+QString::number(id));
 
-            //toto by asi slo do konstruktoru
-            temp->comboBoxInput1->setCurrentText(defaultPort);
-            temp->comboBoxInput2->setCurrentText(defaultPort);
-            temp->comboBoxOutput->setCurrentText(defaultPort);
+OutputBox::OutputBox(auto *scene,QList<OutputBox*> &boxesList){
 
-    operationBoxesList.append(temp);
-    //qWarning() << boxesList <<endl;
-    qWarning() << "PUSH button" << operationBoxesList <<endl;
-    ui->label->setText("Test58");
-    availablePorts.append(QString::number(id)+QString("-in1"));
-    availablePorts.append(QString::number(id)+QString("-in2"));
-    availablePorts.append(QString::number(id)+QString("-out"));
-    qWarning() <<"pushButton" << endl;
-    qWarning() << "FUCK YOU QT" << endl;
-    for(auto &i: availablePorts)
-        qDebug() << i << endl;
+    inputPort1.first = "nonValid";
+    inputPort1.second = 0.0;
 
-    id++;
-    updatePorts();
+    qWarning() << &boxesList << endl;
+
+    boxesListTemp = &boxesList;
+
+    qWarning() << "InputBox Const" << boxesListTemp << endl;
+    //(*ui)->label->setText("HOVNO");
+
+    QBrush blueBrush(Qt::green);
+    QPen Pen(Qt::black);
+    mainItem = (*scene)->addRect(0,20,200,125,Pen,blueBrush);
+    mainItem->setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable);
+    //mainItem->setData(0,inputPort1.second);
+
+    comboBoxInput1 = new QComboBox();
+    resultLabel = new QLabel();
+    result = new QLineEdit();
+    labelName = new QLabel();
+    deleteButton = new QPushButton();
+
+    comboBoxInput1->setFixedHeight(25);
+    comboBoxInput1->setFixedWidth(75);
+    resultLabel->setFixedHeight(25);
+    resultLabel->setFixedWidth(60);
+    result->setFixedHeight(25);
+    result->setFixedWidth(75);
+
+    labelName->setFixedHeight(25);
+    labelName->setFixedWidth(60);
+
+    QFont font = labelName->font();
+    font.setPointSize(20);
+    font.setBold(true);
+
+    labelName->setFont(font);
+    labelName->setAutoFillBackground(false);
+    labelName->setStyleSheet("background:transparent");
+
+    resultLabel->setFont(font);
+    resultLabel->setAutoFillBackground(false);
+    resultLabel->setStyleSheet("background:transparent");
+
+    QGraphicsProxyWidget* comboProxyInput = new QGraphicsProxyWidget(mainItem);
+    QGraphicsProxyWidget* labelNameProxyName = new QGraphicsProxyWidget(mainItem);
+    QGraphicsProxyWidget* resultLabelProxyName = new QGraphicsProxyWidget(mainItem);
+    QGraphicsProxyWidget* resultProxyName = new QGraphicsProxyWidget(mainItem);
+    QGraphicsProxyWidget* deleteProxyButton = new QGraphicsProxyWidget(mainItem);
+
+    comboProxyInput->setWidget(comboBoxInput1);
+    labelNameProxyName->setWidget(labelName);
+    resultLabelProxyName->setWidget(resultLabel);
+    resultProxyName->setWidget(result);
+    deleteProxyButton->setWidget(deleteButton);
+
+    comboProxyInput->setPos(115,76 );
+    labelNameProxyName->setPos(0,-5);
+    resultLabelProxyName->setPos(70,70);
+    resultProxyName->setPos(50,50);
+    deleteProxyButton->setPos(150,200);
+
+    qWarning() << "PRE SIGNAL" << endl;
+
+    connect(deleteButton, SIGNAL (clicked()), this, SLOT (on_deleteButton_clicked()));
+    qWarning() << "POST SIGNAL" << endl;
+   // item->setData(1,toString(this));
+   // item->setParentItem(&this);
 }
+
+OutputBox::~OutputBox(){
+
+}
+
+void OutputBox::on_deleteButton_clicked(){
+    QObject *temp = sender();
+    qWarning() << temp << endl;
+    qWarning() << "this : " << this << endl;
+
+    qWarning() << "Pred" <<endl;
+    qWarning() << "index" << &(*boxesListTemp->at(0)) << endl;
+    qWarning() << "index of" << ((*boxesListTemp).indexOf(this)) << endl;
+
+    qWarning() << *boxesListTemp <<endl;
+
+    //QList<BoxPlus *> templist = w.getList();
+    delete mainItem;
+    int temp2 = ((*boxesListTemp).indexOf(this));
+    (*boxesListTemp).removeAt(temp2);
+
+    qWarning() << "Po" <<endl;
+    qWarning() << *boxesListTemp <<endl;
+
+    qWarning() << "DELETE" << endl;
+}
+
+
