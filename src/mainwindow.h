@@ -42,9 +42,12 @@ public:
     OperationBox(auto *scene, auto *ui, QList<OperationBox *> &boxesList);
     ~OperationBox();
     bool calculate();
-
+signals:
+    void sigOnChangeIn1(QString in_port, QString out_port);
 public slots:
+    void onChangeIn1(QString port_name);
     void on_deleteButton_clicked();
+
 };
 
 class InputBox: public AbstractBox{
@@ -94,8 +97,7 @@ private slots:
     void on_selectionChanged();
     void on_deleteButton_clicked(OperationBox *toDelete);
     void updatePorts();
-
-
+    void onChangeIn1Main(QString in_port, QString out_port);
     void on_plusBoxButton_clicked();
 };
 #endif // MAINWINDOW_H
