@@ -247,6 +247,8 @@ void MainWindow::on_plusBoxButton_clicked()
 
     id++;
     updatePorts();
+
+     connect(temp, SIGNAL (sigOnChangeIn1(QString, QString)), this, SLOT(onChangeIn1Main(QString, QString)));
 }
 
 void MainWindow::on_inputButton_clicked()
@@ -272,6 +274,32 @@ void MainWindow::on_inputButton_clicked()
     updatePorts();
 }
 
+void MainWindow::onChangeIn1Main(QString in_port, QString out_port){
+    qWarning() << "Main on change1" <<endl;
+    qWarning() << in_port <<endl;
+    qWarning() << out_port << endl;
+
+    QStringList in_temp = in_port.split('-');
+    QStringList out_temp = out_port.split('-');
+
+    for(auto &i: operationBoxesList){
+        if (QString::number(i->id) == out_temp[0]){
+            qWarning() << " FOUND " << endl;
+            qWarning() << out_temp[1] << endl;
+
+            int temp_index = i->comboBoxOutput->findText(in_port);
+            //osetreni 2x stejne hodnoty pri vkladani selected
+            if(temp_index >= 0){
+                i->comboBoxOutput->setCurrentIndex(temp_index);
+            }
+            else{
+                i->comboBoxOutput->setCurrentIndex(0);
+            }
+        }
+    }
+
+
+}
 void MainWindow::on_outputButton_clicked()
 {
     qWarning() << &outputBoxesList <<endl;
@@ -372,6 +400,8 @@ OperationBox::OperationBox(auto *scene,QList<OperationBox*> &boxesList){
 
     qWarning() << "PRE SIGNAL" << endl;
 
+    connect(comboBoxInput1, SIGNAL (currentIndexChanged(QString)), this, SLOT(onChangeIn1(QString)));
+
     connect(deleteButton, SIGNAL (clicked()), this, SLOT (on_deleteButton_clicked()));
     qWarning() << "POST SIGNAL" << endl;
    // item->setData(1,toString(this));
@@ -406,6 +436,17 @@ void OperationBox::on_deleteButton_clicked(){
     qWarning() << *boxesListTemp <<endl;
 
     qWarning() << "DELETE" << endl;
+}
+void OperationBox::onChangeIn1(QString port_name){
+   // qWarning() << sender()->parentWidget() << endl;
+    qWarning() << this << endl;
+    qWarning() << sender() << endl;
+    qWarning() << "Changed index:" << port_name << endl;
+    QString in_port = QString::number(id) + "-in1";
+    qWarning() <<"In port: "  <<in_port << endl;
+    QString out_port = port_name ;
+    qWarning() <<"Out port: "<< out_port << endl;
+    emit sigOnChangeIn1(in_port, out_port);
 }
 
 InputBox::InputBox(auto *scene,QList<InputBox*> &boxesList){
