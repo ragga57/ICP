@@ -14,6 +14,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
     scene = new QGraphicsScene(this);
     ui->graphicsView->setScene(scene);
+ //   ui->graphicsView->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+   // ui->graphicsView->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     id = 0;
     availablePorts.append(defaultPort);
     connect(scene, SIGNAL (selectionChanged()), this, SLOT (on_selectionChanged()));
@@ -249,6 +251,7 @@ void MainWindow::on_plusBoxButton_clicked()
     updatePorts();
 
      connect(temp, SIGNAL (sigOnChangeIn1(QString, QString)), this, SLOT(onChangeIn1Main(QString, QString)));
+     connect(temp, SIGNAL (sigOnChangeOut(QString, QString)), this, SLOT(onChangeOutMain(QString, QString)));
 }
 
 void MainWindow::on_inputButton_clicked()
@@ -274,6 +277,55 @@ void MainWindow::on_inputButton_clicked()
     updatePorts();
 }
 
+void MainWindow::drawLines(){
+    QBrush blueBrush(Qt::blue);
+    QPen Pen(Qt::black);
+    qWarning() << "Drawing Lines" << endl;
+    for(auto &i: operationBoxesList){
+        QString start_in1_text = i->comboBoxInput1->currentText();
+        QString start_in2_text = i->comboBoxInput2->currentText();
+        QString start_out_text = i->comboBoxOutput->currentText();
+
+        int start_in1_x = i->mainItem->pos().x(); // TODO: OFFSETS
+        int start_in1_y = i->mainItem->pos().y();
+        int start_in2_x = i->mainItem->pos().x();
+        int start_in2_y = i->mainItem->pos().y();
+        int start_out_x = i->mainItem->pos().x();
+        int start_out_y = i->mainItem->pos().y();
+       for(auto &j: operationBoxesList){
+           QStringList start_in1_text_split = start_in1_text.split('-');
+           QStringList start_in2_text_split = start_in2_text.split('-');
+           QStringList start_out_text_split = start_out_text.split('-');
+
+           if (QString::number(j->id) == start_in1_text_split[0]){
+
+               //TODO OFFSETS BASED ON WHICH PORT SAME SHIT JUST CONDITION FOR out
+               // TODO PUSHOVANIE DO LISTU
+                int end_x = j->mainItem->pos().x();
+                int end_y = j->mainItem->pos().y();
+                QGraphicsLineItem *line = (*scene).addLine(start_in1_x, start_in1_y, end_x, end_y,Pen);
+           }
+
+           if (QString::number(j->id) == start_in2_text_split[0]){
+
+               //TODO OFFSETS BASED ON WHICH PORT SAME SHIT JUST CONDITION FOR out
+                int end_x = j->mainItem->pos().x();
+                int end_y = j->mainItem->pos().y();
+                QGraphicsLineItem *line = (*scene).addLine(start_in2_x, start_in2_y, end_x, end_y,Pen);
+           }
+           if (QString::number(j->id) == start_out_text_split[0]){
+
+               //TODO OFFSETS BASED ON WHICH PORT SAME SHIT JUST CONDITION FOR in1/in2
+                int end_x = j->mainItem->pos().x();
+                int end_y = j->mainItem->pos().y();
+                QGraphicsLineItem *line = (*scene).addLine(start_out_x, start_out_y, end_x, end_y,Pen);
+           }
+
+       }
+
+    }
+}
+
 void MainWindow::onChangeIn1Main(QString in_port, QString out_port){
     qWarning() << "Main on change1" <<endl;
     qWarning() << in_port <<endl;
@@ -282,10 +334,13 @@ void MainWindow::onChangeIn1Main(QString in_port, QString out_port){
     QStringList in_temp = in_port.split('-');
     QStringList out_temp = out_port.split('-');
 
+
+
+
+
+
     for(auto &i: operationBoxesList){
         if (QString::number(i->id) == out_temp[0]){
-            qWarning() << " FOUND " << endl;
-            qWarning() << out_temp[1] << endl;
 
             int temp_index = i->comboBoxOutput->findText(in_port);
             //osetreni 2x stejne hodnoty pri vkladani selected
@@ -298,8 +353,44 @@ void MainWindow::onChangeIn1Main(QString in_port, QString out_port){
         }
     }
 
+    drawLines();
 
 }
+
+void MainWindow::onChangeOutMain(QString in_port, QString out_port){
+
+    QStringList in_temp = in_port.split('-');
+    QStringList out_temp = out_port.split('-');
+
+    for(auto &i: operationBoxesList){
+        if (QString::number(i->id) == in_temp[0]){
+
+            if(in_temp[1] == "in1"){
+                int temp_index = i->comboBoxInput1->findText(out_port);
+                //osetreni 2x stejne hodnoty pri vkladani selected
+                if(temp_index >= 0){
+                    i->comboBoxInput1->setCurrentIndex(temp_index);
+                }
+                else{
+                    i->comboBoxInput1->setCurrentIndex(0);
+                }
+            }
+            else if (in_temp[1] == "in2"){
+                int temp_index = i->comboBoxInput2->findText(out_port);
+                //osetreni 2x stejne hodnoty pri vkladani selected
+                if(temp_index >= 0){
+                    i->comboBoxInput2->setCurrentIndex(temp_index);
+                }
+                else{
+                    i->comboBoxInput2->setCurrentIndex(0);
+                }
+            }
+        }
+    }
+
+    drawLines();
+}
+
 void MainWindow::on_outputButton_clicked()
 {
     qWarning() << &outputBoxesList <<endl;
@@ -401,7 +492,8 @@ OperationBox::OperationBox(auto *scene,QList<OperationBox*> &boxesList){
     qWarning() << "PRE SIGNAL" << endl;
 
     connect(comboBoxInput1, SIGNAL (currentIndexChanged(QString)), this, SLOT(onChangeIn1(QString)));
-
+    connect(comboBoxInput2, SIGNAL (currentIndexChanged(QString)), this, SLOT(onChangeIn2(QString)));
+    connect(comboBoxOutput, SIGNAL (currentIndexChanged(QString)), this, SLOT(onChangeOut(QString)));
     connect(deleteButton, SIGNAL (clicked()), this, SLOT (on_deleteButton_clicked()));
     qWarning() << "POST SIGNAL" << endl;
    // item->setData(1,toString(this));
@@ -447,6 +539,30 @@ void OperationBox::onChangeIn1(QString port_name){
     QString out_port = port_name ;
     qWarning() <<"Out port: "<< out_port << endl;
     emit sigOnChangeIn1(in_port, out_port);
+}
+
+void OperationBox::onChangeIn2(QString port_name){
+   // qWarning() << sender()->parentWidget() << endl;
+    qWarning() << this << endl;
+    qWarning() << sender() << endl;
+    qWarning() << "Changed index:" << port_name << endl;
+    QString in_port = QString::number(id) + "-in2";
+    qWarning() <<"In port: "  <<in_port << endl;
+    QString out_port = port_name ;
+    qWarning() <<"Out port: "<< out_port << endl;
+    emit sigOnChangeIn1(in_port, out_port);
+}
+
+void OperationBox::onChangeOut(QString port_name){
+   // qWarning() << sender()->parentWidget() << endl;
+    qWarning() << this << endl;
+    qWarning() << sender() << endl;
+    qWarning() << "Changed index:" << port_name << endl;
+    QString in_port = port_name;
+    qWarning() <<"In port: "  <<in_port << endl;
+    QString out_port = QString::number(id) + "-out";
+    qWarning() <<"Out port: "<< out_port << endl;
+    emit sigOnChangeOut(in_port, out_port);
 }
 
 InputBox::InputBox(auto *scene,QList<InputBox*> &boxesList){
