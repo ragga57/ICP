@@ -226,38 +226,9 @@ void MainWindow::on_deleteButton_clicked(OperationBox *toDelete){
 
 void MainWindow::on_plusBoxButton_clicked()
 {
-    qWarning() << "on_plusBoxButton_clicked" << endl;
-    qWarning() << &operationBoxesList <<endl;
-    //int test = boxesList;
-    OperationBox *temp = new OperationBox(&scene, operationBoxesList);
-    temp->id = id;
-    temp->type = "+";
-    temp->labelType->setText("+");
-    temp->labelName->setText(QString("obj ")+QString::number(id));
 
-            //toto by asi slo do konstruktoru
-            temp->comboBoxInput1->setCurrentText(defaultPort);
-            temp->comboBoxInput2->setCurrentText(defaultPort);
-            temp->comboBoxOutput->setCurrentText(defaultPort);
+     createSpecificOperationBox("+");
 
-    operationBoxesList.append(temp);
-    //qWarning() << boxesList <<endl;
-    qWarning() << "PUSH button" << operationBoxesList <<endl;
-    ui->label->setText("Test58");
-    availablePorts.append(QString::number(id)+QString("-in1"));
-    availablePorts.append(QString::number(id)+QString("-in2"));
-    availablePorts.append(QString::number(id)+QString("-out"));
-    qWarning() <<"pushButton" << endl;
-    qWarning() << "FUCK YOU QT" << endl;
-    for(auto &i: availablePorts)
-        qDebug() << i << endl;
-
-    id++;
-    updatePorts();
-
-     connect(temp, SIGNAL (sigOnChangeIn1(QString, QString)), this, SLOT(onChangeIn1Main(QString, QString)));
-     connect(temp, SIGNAL (sigOnChangeOut(QString, QString)), this, SLOT(onChangeOutMain(QString, QString)));
-     connect(scene, SIGNAL(changed(QList<QRectF>)),this, SLOT (on_itempositionhaschanged(QList<QRectF>)));
 }
 int count = 0;
 void MainWindow::on_itempositionhaschanged(QList<QRectF>){
@@ -463,12 +434,12 @@ void MainWindow::on_outputButton_clicked()
 }
 
 OperationBox::OperationBox(auto *scene,QList<OperationBox*> &boxesList){
-    qWarning() << "OperationBox" <<endl;
-    inputPort1.first = "number";
+
+    inputPort1.first = "nonValid";
     inputPort1.second = 0.0;
-    inputPort2.first = "number";
+    inputPort2.first = "nonValid";
     inputPort2.second = 0.0;
-    outputPort.first = "number";
+    outputPort.first = "nonValid";
     outputPort.second = 0.0;
 
     qWarning() << &boxesList << endl;
@@ -551,9 +522,65 @@ OperationBox::OperationBox(auto *scene,QList<OperationBox*> &boxesList){
 OperationBox::~OperationBox(){
 
 }
+/*
+void OperationBox::hoverMoveEvent(QGraphicsSceneHoverEvent * event){
+    qDebug() << "HOVERRRRRRRRRRRR"<< endl;
 
-bool OperationBox::calculate(){
+}*/
 
+bool OperationBox::calculate(auto operationBoxesList, auto outputBoxesList){
+    QString targetObj;
+    QString targetPort;
+    bool found = false;
+    if (inputPort1.first == "valid" && inputPort2.first == "valid"){
+        if (type == "+"){
+            resultValue = inputPort1.second + inputPort2.second;
+
+        }
+        if (type == "-"){
+            resultValue = inputPort1.second - inputPort2.second;
+
+        }
+        if (type == "*"){
+            resultValue = inputPort1.second * inputPort2.second;
+
+        }
+        if (type == "/"){
+            resultValue = inputPort1.second / inputPort2.second;
+
+        }
+
+        //zjistim komu a kam
+        targetObj = comboBoxOutput->currentText().section('-',0,0);
+        targetPort = comboBoxOutput->currentText().section('-',1,1);
+        qDebug() << "operation " << QString("obj ") << QString(targetObj) << QString(" port ") << QString(targetPort) << endl;
+        for(auto &i: operationBoxesList){
+            if (QString::number(i->id) == targetObj){
+                found = true;
+                if (targetPort == "in1"){
+                    i->inputPort1.first = "valid";
+                    i->inputPort1.second = resultValue;
+                }
+                if (targetPort == "in2"){
+                    i->inputPort2.first = "valid";
+                    i->inputPort2.second = resultValue;
+                }
+                break;
+            }
+        }
+        //pokud jsem nenasel v operation box
+        if (!found){
+            for(auto &i: outputBoxesList){
+                if (QString::number(i->id) == targetObj){
+                    i->inputPort1.first = "valid";
+                    i->inputPort1.second = resultValue;
+                    break;
+                }
+            }
+        }
+        return true;
+   }
+    return false;
 }
 
 void OperationBox::on_deleteButton_clicked(){
@@ -631,7 +658,7 @@ InputBox::InputBox(auto *scene,QList<InputBox*> &boxesList){
 
     QBrush blueBrush(Qt::yellow);
     QPen Pen(Qt::black);
-    mainItem = (*scene)->addRect(0,20,200,125,Pen,blueBrush);
+    mainItem = (*scene)->addRect(0,20,200,50,Pen,blueBrush);
     mainItem->setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable);
     //mainItem->setData(0,inputPort1.second);
 
@@ -666,10 +693,10 @@ InputBox::InputBox(auto *scene,QList<InputBox*> &boxesList){
     inputSpinBoxProxy->setWidget(inputSpinBox);
     deleteProxyButton->setWidget(deleteButton);
 
-    comboProxyOutput->setPos(115,76 );
+    comboProxyOutput->setPos(115,30);
     labelNameProxyName->setPos(0,-5);
-    inputSpinBoxProxy->setPos(50,30);
-    deleteProxyButton->setPos(150,200);
+    inputSpinBoxProxy->setPos(20,30);
+    deleteProxyButton->setPos(150,70);
 
     qWarning() << "PRE SIGNAL" << endl;
 
@@ -721,13 +748,14 @@ OutputBox::OutputBox(auto *scene,QList<OutputBox*> &boxesList){
 
     QBrush blueBrush(Qt::green);
     QPen Pen(Qt::black);
-    mainItem = (*scene)->addRect(0,20,200,125,Pen,blueBrush);
+    mainItem = (*scene)->addRect(0,20,200,50,Pen,blueBrush);
     mainItem->setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable);
     //mainItem->setData(0,inputPort1.second);
 
     comboBoxInput1 = new QComboBox();
     resultLabel = new QLabel();
     result = new QLineEdit();
+    result->setReadOnly(true);
     labelName = new QLabel();
     deleteButton = new QPushButton();
 
@@ -765,11 +793,11 @@ OutputBox::OutputBox(auto *scene,QList<OutputBox*> &boxesList){
     resultProxyName->setWidget(result);
     deleteProxyButton->setWidget(deleteButton);
 
-    comboProxyInput->setPos(115,76 );
+    comboProxyInput->setPos(20,30 );
     labelNameProxyName->setPos(0,-5);
     resultLabelProxyName->setPos(70,70);
-    resultProxyName->setPos(50,50);
-    deleteProxyButton->setPos(150,200);
+    resultProxyName->setPos(115,30);
+    deleteProxyButton->setPos(150,70);
 
     qWarning() << "PRE SIGNAL" << endl;
 
@@ -806,4 +834,119 @@ void OutputBox::on_deleteButton_clicked(){
     qWarning() << "DELETE" << endl;
 }
 
+void InputBox::calculate(auto operationBoxesList, auto outputBoxesList){
 
+    QString targetObj;
+    QString targetPort;
+    bool found = false;
+    //zjistim komu a kam
+    targetObj = comboBoxOutput->currentText().section('-',0,0);
+    targetPort = comboBoxOutput->currentText().section('-',1,1);
+    qDebug() << QString("obj ") << QString(targetObj) << QString(" port ") << QString(targetPort) << endl;
+    for(auto &i: operationBoxesList){
+        if (QString::number(i->id) == targetObj){
+            found = true;
+            resultValue = double(inputSpinBox->value());
+            if (targetPort == "in1"){
+                i->inputPort1.first = "valid";
+                i->inputPort1.second = resultValue;
+            }
+            if (targetPort == "in2"){
+                i->inputPort2.first = "valid";
+                i->inputPort2.second = resultValue;
+            }
+            break;
+        }
+    }
+    //pokud jsem nenasel v operation box
+    if (!found){
+        for(auto &i: outputBoxesList){
+            if (QString::number(i->id) == targetObj){
+                resultValue = double(inputSpinBox->value());
+                i->inputPort1.first = "valid";
+                i->inputPort1.second = resultValue;
+                break;
+            }
+        }
+    }
+}
+
+void MainWindow::on_runButton_clicked()
+{
+    QList<OperationBox *> tmpList;
+    //check();
+    for(auto &i: inputBoxesList){
+        i->calculate(operationBoxesList,outputBoxesList);
+    }
+    while (tmpList.size() != operationBoxesList.size()){
+        for(auto &i: operationBoxesList){
+            if (i->calculate(operationBoxesList,outputBoxesList)){
+                if (!tmpList.contains(i)){
+                    tmpList.append(i);
+                }
+            }
+        }
+    }
+    for(auto &i: outputBoxesList){
+        i->calculate();
+    }
+}
+void OutputBox::calculate(){
+    if(inputPort1.first == "valid"){
+        resultValue = inputPort1.second;
+        result->setText(QString::number(resultValue));
+    }
+}
+
+
+
+void MainWindow::on_minusBoxButton_clicked()
+{
+    createSpecificOperationBox("-");
+}
+void MainWindow::createSpecificOperationBox(QString type){
+    qWarning() << &operationBoxesList <<endl;
+    //int test = boxesList;
+    OperationBox *temp = new OperationBox(&scene, operationBoxesList);
+    temp->id = id;
+    temp->type = type;
+    temp->labelType->setText(type);
+    temp->labelName->setText(QString("obj ")+QString::number(id));
+
+            //toto by asi slo do konstruktoru
+            temp->comboBoxInput1->setCurrentText(defaultPort);
+            temp->comboBoxInput2->setCurrentText(defaultPort);
+            temp->comboBoxOutput->setCurrentText(defaultPort);
+
+    operationBoxesList.append(temp);
+    //qWarning() << boxesList <<endl;
+    qWarning() << "PUSH button" << operationBoxesList <<endl;
+    ui->label->setText("Test58");
+    availablePorts.append(QString::number(id)+QString("-in1"));
+    availablePorts.append(QString::number(id)+QString("-in2"));
+    availablePorts.append(QString::number(id)+QString("-out"));
+    qWarning() <<"pushButton" << endl;
+    qWarning() << "FUCK YOU QT" << endl;
+    for(auto &i: availablePorts)
+        qDebug() << i << endl;
+
+    id++;
+    updatePorts();
+
+     connect(temp, SIGNAL (sigOnChangeIn1(QString, QString)), this, SLOT(onChangeIn1Main(QString, QString)));
+
+     connect(temp, SIGNAL (sigOnChangeOut(QString, QString)), this, SLOT(onChangeOutMain(QString, QString)));
+     connect(scene, SIGNAL(changed(QList<QRectF>)),this, SLOT (on_itempositionhaschanged(QList<QRectF>)));
+
+}
+
+
+void MainWindow::on_multiBoxButton_clicked()
+{
+    createSpecificOperationBox("*");
+}
+
+void MainWindow::on_divideBoxButton_clicked()
+{
+    createSpecificOperationBox("/");
+}
