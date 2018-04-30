@@ -15,14 +15,34 @@
 #include <QDoubleSpinBox>
 #include <QLineEdit>
 #include <QGraphicsLineItem>
+#include <unistd.h>
 
+//class customRectItem: public QGraphicsRectItem{
+//signals:
+//    void posChanged();
+//public:
+//    customRectItem(int x, int y, int w, int h): QGraphicsRectItem(x,y,w,h){
+//        setFlags(
+//            QGraphicsItem::ItemIsSelectable
+//            | QGraphicsItem::ItemIsMovable
+//            | QGraphicsItem::ItemSendsGeometryChanges);
 
+//    }
+
+//    virtual QVariant itemChange(QGraphicsItem::GraphicsItemChange change, const QVariant &value) override
+//    {
+//        if(change == ItemPositionHasChanged && scene()){
+//            emit posChanged();
+//        }
+//        return QGraphicsItem::itemChange(change, value);
+//    }
+//};
 
 class AbstractBox: public QObject{
 public:
     int id;
     QLabel* labelName;
-    QGraphicsRectItem *mainItem;
+    QGraphicsRectItem* mainItem;
     QPushButton* deleteButton;
 
 };
@@ -101,6 +121,7 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
     QList<OperationBox *> getList();
+    void drawLines();
 
 
 protected:
@@ -110,6 +131,7 @@ protected:
     QList<InputBox *> inputBoxesList;
     QList<OperationBox *> operationBoxesList;
     QList<OutputBox *> outputBoxesList;
+    QList<QGraphicsLineItem *> linesList;
     int id;
     QString defaultPort = "-------";
     QList<QString> availablePorts;
@@ -118,7 +140,6 @@ private:
     void updateOperationBoxPort(auto &i, QString port);
     void updateInputBoxPort(auto &i);
     void updateOutputBoxPort(auto &i);
-    void drawLines();
 private slots:
     void on_selectionChanged();
     void on_deleteButton_clicked(OperationBox *toDelete);
@@ -128,5 +149,6 @@ private slots:
     void on_plusBoxButton_clicked();
     void on_inputButton_clicked();
     void on_outputButton_clicked();
+    void on_itempositionhaschanged(QList<QRectF>);
 };
 #endif // MAINWINDOW_H

@@ -30,7 +30,7 @@ MainWindow::~MainWindow()
     delete scene;
 }
 void MainWindow::updatePorts(){
-
+    qWarning() << "updatePorts" << endl;
     //projde listy a naplni hodnotama
     for(auto &i: inputBoxesList){
         updateInputBoxPort(i);
@@ -45,6 +45,7 @@ void MainWindow::updatePorts(){
     }
 }
 void MainWindow::updateInputBoxPort(auto &i){
+    qWarning() << "updateInputBoxPort" << endl;
     QString currVal;
     QString currBoxId = QString::number(i->id);
     QList<QString> tmpList;
@@ -86,6 +87,7 @@ void MainWindow::updateInputBoxPort(auto &i){
 }
 
 void MainWindow::updateOperationBoxPort(auto &i,QString port){
+    qWarning() << "updateOperationBoxPort" << endl;
     QString currVal;
     QString specRegExp;
     QString currBoxId = QString::number(i->id);
@@ -162,6 +164,7 @@ void MainWindow::updateOperationBoxPort(auto &i,QString port){
 }
 
 void MainWindow::updateOutputBoxPort(auto &i){
+    qWarning() << "updateOUtputBoxPort" << endl;
     QString currVal;
     QString currBoxId = QString::number(i->id);
     QList<QString> tmpList;
@@ -199,8 +202,9 @@ void MainWindow::updateOutputBoxPort(auto &i){
 }
 
 void MainWindow::on_selectionChanged(){
+    qWarning() << "on_selectionChanged()" << endl;
    // qWarning() << boxesList <<endl;
-
+    //drawLines();
     ui->label->setText("Test69");
     // pri kliknuti do sceny crash...
    auto temp_items = scene->selectedItems();
@@ -222,6 +226,7 @@ void MainWindow::on_deleteButton_clicked(OperationBox *toDelete){
 
 void MainWindow::on_plusBoxButton_clicked()
 {
+    qWarning() << "on_plusBoxButton_clicked" << endl;
     qWarning() << &operationBoxesList <<endl;
     //int test = boxesList;
     OperationBox *temp = new OperationBox(&scene, operationBoxesList);
@@ -252,10 +257,26 @@ void MainWindow::on_plusBoxButton_clicked()
 
      connect(temp, SIGNAL (sigOnChangeIn1(QString, QString)), this, SLOT(onChangeIn1Main(QString, QString)));
      connect(temp, SIGNAL (sigOnChangeOut(QString, QString)), this, SLOT(onChangeOutMain(QString, QString)));
+     connect(scene, SIGNAL(changed(QList<QRectF>)),this, SLOT (on_itempositionhaschanged(QList<QRectF>)));
+}
+int count = 0;
+void MainWindow::on_itempositionhaschanged(QList<QRectF>){
+    qWarning() << "on_itempositionhaschanged" << endl;
+    count = count +1;
+    qWarning() << "count:"<<count << endl;
+//    disconnect(scene, SIGNAL(changed(QList<QRectF>)),this, SLOT (on_itempositionhaschanged(QList<QRectF>)));
+    scene->blockSignals(true);
+    qWarning() << "WTF" << endl;
+
+    drawLines();
+
+    scene->blockSignals(false);
+   // connect(scene, SIGNAL(changed(QList<QRectF>)),this, SLOT (on_itempositionhaschanged(QList<QRectF>)));
 }
 
 void MainWindow::on_inputButton_clicked()
 {
+    qWarning() << "on_inputButton_clicked()" << endl;
     qWarning() << &inputBoxesList <<endl;
     //int test = boxesList;
     InputBox *temp = new InputBox(&scene, inputBoxesList);
@@ -278,9 +299,24 @@ void MainWindow::on_inputButton_clicked()
 }
 
 void MainWindow::drawLines(){
+    qWarning() << "drawLines" << endl;
     QBrush blueBrush(Qt::blue);
     QPen Pen(Qt::black);
-    qWarning() << "Drawing Lines" << endl;
+    //qWarning() << "removing lines" << endl;
+    //qWarning() << linesList << endl;
+    if(!linesList.empty()){
+     for (auto &i: linesList){
+        qWarning() << "Here" << endl;
+        qWarning() << i  << endl;
+        int temp2 = linesList.indexOf(i);
+        (linesList).removeAt(temp2);
+        delete i;
+
+     }
+     qWarning() << "for done" << endl;
+    }
+
+    //qWarning() << "Drawing Lines" << endl;
     for(auto &i: operationBoxesList){
         QString start_in1_text = i->comboBoxInput1->currentText();
         QString start_in2_text = i->comboBoxInput2->currentText();
@@ -304,6 +340,8 @@ void MainWindow::drawLines(){
                 int end_x = j->mainItem->pos().x();
                 int end_y = j->mainItem->pos().y();
                 QGraphicsLineItem *line = (*scene).addLine(start_in1_x, start_in1_y, end_x, end_y,Pen);
+                linesList.append(line);
+
            }
 
            if (QString::number(j->id) == start_in2_text_split[0]){
@@ -312,6 +350,8 @@ void MainWindow::drawLines(){
                 int end_x = j->mainItem->pos().x();
                 int end_y = j->mainItem->pos().y();
                 QGraphicsLineItem *line = (*scene).addLine(start_in2_x, start_in2_y, end_x, end_y,Pen);
+                linesList.append(line);
+
            }
            if (QString::number(j->id) == start_out_text_split[0]){
 
@@ -319,14 +359,20 @@ void MainWindow::drawLines(){
                 int end_x = j->mainItem->pos().x();
                 int end_y = j->mainItem->pos().y();
                 QGraphicsLineItem *line = (*scene).addLine(start_out_x, start_out_y, end_x, end_y,Pen);
+                linesList.append(line);
+
            }
 
        }
 
     }
+    qWarning() << "Draw Done" << endl;
+  //  connect(scene, SIGNAL(changed(QList<QRectF>)),this, SLOT (on_itempositionhaschanged(QList<QRectF>)));
+  //  scene->blockSignals(false);
 }
 
 void MainWindow::onChangeIn1Main(QString in_port, QString out_port){
+    qWarning() << "onChangeInMain" << endl;
     qWarning() << "Main on change1" <<endl;
     qWarning() << in_port <<endl;
     qWarning() << out_port << endl;
@@ -358,7 +404,7 @@ void MainWindow::onChangeIn1Main(QString in_port, QString out_port){
 }
 
 void MainWindow::onChangeOutMain(QString in_port, QString out_port){
-
+    qWarning() << "onChangeOutMain" << endl;
     QStringList in_temp = in_port.split('-');
     QStringList out_temp = out_port.split('-');
 
@@ -393,6 +439,7 @@ void MainWindow::onChangeOutMain(QString in_port, QString out_port){
 
 void MainWindow::on_outputButton_clicked()
 {
+    qWarning() << "on_outputButton_clicked" << endl;
     qWarning() << &outputBoxesList <<endl;
     //int test = boxesList;
     OutputBox *temp = new OutputBox(&scene, outputBoxesList);
@@ -416,6 +463,7 @@ void MainWindow::on_outputButton_clicked()
 }
 
 OperationBox::OperationBox(auto *scene,QList<OperationBox*> &boxesList){
+    qWarning() << "OperationBox" <<endl;
     inputPort1.first = "number";
     inputPort1.second = 0.0;
     inputPort2.first = "number";
@@ -433,7 +481,7 @@ OperationBox::OperationBox(auto *scene,QList<OperationBox*> &boxesList){
     QBrush blueBrush(Qt::blue);
     QPen Pen(Qt::black);
     mainItem = (*scene)->addRect(0,20,200,125,Pen,blueBrush);
-    mainItem->setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable);
+    mainItem->setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemSendsGeometryChanges);
     mainItem->setData(0,inputPort1.second);
     comboBoxInput1 = new QComboBox();
     comboBoxInput2 = new QComboBox();
@@ -509,6 +557,7 @@ bool OperationBox::calculate(){
 }
 
 void OperationBox::on_deleteButton_clicked(){
+    qWarning() << "on_deleteButton_clicked" << endl;
     QObject *temp = sender();
     qWarning() << temp << endl;
     qWarning() << "this : " << this << endl;
@@ -530,6 +579,7 @@ void OperationBox::on_deleteButton_clicked(){
     qWarning() << "DELETE" << endl;
 }
 void OperationBox::onChangeIn1(QString port_name){
+    qWarning() << "onChangeIN1" << endl;
    // qWarning() << sender()->parentWidget() << endl;
     qWarning() << this << endl;
     qWarning() << sender() << endl;
@@ -542,6 +592,7 @@ void OperationBox::onChangeIn1(QString port_name){
 }
 
 void OperationBox::onChangeIn2(QString port_name){
+    qWarning() << "onChangeIN2" << endl;
    // qWarning() << sender()->parentWidget() << endl;
     qWarning() << this << endl;
     qWarning() << sender() << endl;
@@ -554,6 +605,7 @@ void OperationBox::onChangeIn2(QString port_name){
 }
 
 void OperationBox::onChangeOut(QString port_name){
+    qWarning() << "onChangeOUt" << endl;
    // qWarning() << sender()->parentWidget() << endl;
     qWarning() << this << endl;
     qWarning() << sender() << endl;
@@ -566,7 +618,7 @@ void OperationBox::onChangeOut(QString port_name){
 }
 
 InputBox::InputBox(auto *scene,QList<InputBox*> &boxesList){
-
+    qWarning() << "InputBox" << endl;
     outputPort.first = "nonValid";
     outputPort.second = 0.0;
 
@@ -632,6 +684,7 @@ InputBox::~InputBox(){
 }
 
 void InputBox::on_deleteButton_clicked(){
+    qWarning() << "on_deleteButton_clicked INPUTBOX" << endl;
     QObject *temp = sender();
     qWarning() << temp << endl;
     qWarning() << "this : " << this << endl;
@@ -655,7 +708,7 @@ void InputBox::on_deleteButton_clicked(){
 
 
 OutputBox::OutputBox(auto *scene,QList<OutputBox*> &boxesList){
-
+    qWarning() << "OutputBox" << endl;
     inputPort1.first = "nonValid";
     inputPort1.second = 0.0;
 
@@ -731,6 +784,7 @@ OutputBox::~OutputBox(){
 }
 
 void OutputBox::on_deleteButton_clicked(){
+    qWarning() << "on_deleteButtonClicked OUTPUTBOX" << endl;
     QObject *temp = sender();
     qWarning() << temp << endl;
     qWarning() << "this : " << this << endl;
