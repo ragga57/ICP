@@ -15,12 +15,15 @@
 #include <QDoubleSpinBox>
 #include <QLineEdit>
 #include <QGraphicsLineItem>
+#include <QGraphicsSceneHoverEvent>
+#include <QEvent>
 
 
 
 class AbstractBox: public QObject{
 public:
     int id;
+    double resultValue;
     QLabel* labelName;
     QGraphicsRectItem *mainItem;
     QPushButton* deleteButton;
@@ -30,14 +33,13 @@ class OperationBox : public AbstractBox{
     Q_OBJECT
 
 protected:
+    QList<OperationBox *> *boxesListTemp;
+    //virtual void hoverMoveEvent(QGraphicsSceneHoverEvent * event);
 
+public:
     QPair<QString, double> inputPort1;
     QPair<QString, double> inputPort2;
     QPair<QString, double> outputPort;
-
-    QList<OperationBox *> *boxesListTemp;
-
-public:
     QString type;
     QLabel* labelType;
     QComboBox* comboBoxInput1;
@@ -45,7 +47,7 @@ public:
     QComboBox* comboBoxOutput;
     OperationBox(auto *scene, QList<OperationBox *> &boxesList);
     ~OperationBox();
-    bool calculate();
+    bool calculate(auto operationBoxesList, auto outputBoxesList);
 signals:
     void sigOnChangeIn1(QString in_port, QString out_port);
     void sigOnChangeOut(QString in_port, QString out_port);
@@ -66,23 +68,27 @@ public:
     QDoubleSpinBox* inputSpinBox;
     InputBox(auto *scene, QList<InputBox *> &boxesList);
     ~InputBox();
+    void calculate(auto operationBoxesList, auto outputBoxesList);
 public slots:
     void on_deleteButton_clicked();
+
 };
 
 class OutputBox: public AbstractBox{
     Q_OBJECT
 protected:
-    QPair<QString, double> inputPort1;
     QList<OutputBox *> *boxesListTemp;
 public:
+    QPair<QString, double> inputPort1;
     QComboBox* comboBoxInput1;
     QLabel* resultLabel;
     QLineEdit* result;
     OutputBox(auto *scene, QList<OutputBox *> &boxesList);
     ~OutputBox();
+    void calculate();
 public slots:
     void on_deleteButton_clicked();
+
 };
 
 
@@ -119,6 +125,7 @@ private:
     void updateInputBoxPort(auto &i);
     void updateOutputBoxPort(auto &i);
     void drawLines();
+    void createSpecificOperationBox(QString type);
 private slots:
     void on_selectionChanged();
     void on_deleteButton_clicked(OperationBox *toDelete);
@@ -128,5 +135,9 @@ private slots:
     void on_plusBoxButton_clicked();
     void on_inputButton_clicked();
     void on_outputButton_clicked();
+    void on_runButton_clicked();
+    void on_minusBoxButton_clicked();
+    void on_multiBoxButton_clicked();
+    void on_divideBoxButton_clicked();
 };
 #endif // MAINWINDOW_H
