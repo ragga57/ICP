@@ -1,13 +1,13 @@
-Projekt do předmětu ICP BlockEditor
+#Projekt do předmětu ICP BlockEditor
 
-Autoři:
+##Autoři:
 Jan Válka (xvalka03)
 Ivan Eštvan (xestva00)
 
-Zadání:
+##Zadání:
 	Vytvořit aplikaci blockEditor, která bude umožňovat vytvářet, editovat, ukládat a 	načítat bloková schémata.
 
-Doplňující požadavky:
+##Doplňující požadavky:
 	Při najetí myši na blok nebo propoj se zobrazí aktuální hodnoty prvků 
 	Výpočet je možné krokovat
 	Při výpočtu je vždy zvýrazněn blok, který se aktuálně zpracovává
@@ -15,11 +15,11 @@ Doplňující požadavky:
 	Systém požádá o vyplnění portů pokud před výpočtem nejsou vyplněny
 	Spoje se vytvoří automaticky podle zadaných portů
 
-Kompilace programu:
+##Kompilace programu:
 	make			přeloží program
 	make doxygen		vygeneruje dokumentaci
 	make clean		smaže produkty překladu
 	make pack		vytvoří archív
 
-Spuštění programu:
+##Spuštění programu:
 	make run
