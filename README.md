@@ -16,10 +16,10 @@ Vytvořit aplikaci blockEditor, která bude umožňovat vytvářet, editovat, uk
 - Spoje se vytvoří automaticky podle zadaných portů
 
 ## Kompilace programu:
-- make			přeloží program
-- make doxygen		vygeneruje dokumentaci
-- make clean		smaže produkty překladu
-- make pack		vytvoří archív
+- **make**			přeloží program
+- **make doxygen**		vygeneruje dokumentaci
+- **make clean**		smaže produkty překladu
+- **make pack**		vytvoří archív
 
 ## Spuštění programu:
-- make run
+- **make run**
